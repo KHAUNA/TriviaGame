@@ -1,0 +1,25 @@
+/* CSS  */
+#play-button {
+    background-color: lightblue;
+    width:150px;
+    height:50px;
+    font-size: 25px;
+    text-align: center;
+}
+body {
+    background: url("https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/US_%242_obverse-high.jpg/1200px-US_%242_obverse-high.jpg") repeat center; 
+}
+#game-window {
+    background-color: white;
+    height: 400px;
+    width: 600px;
+    margin-left: 25%;
+    margin-top: 10%;
+    opacity: 0.85;
+}
+#trivia-title-div {
+    padding-top: 70px;
+}
+.center-me {
+    text-align: center;
+}
