@@ -6,7 +6,7 @@ var countDown = 10;
 var interval;
 var quest = 0;
 var option = 0;
-var answerStatus = 0;
+var answerStatus = false;
 
 //Game is stored in a large object
 var triviaGame = {
@@ -40,45 +40,66 @@ var triviaGame = {
             triviaGame.questions();
         });    
     },
-    
+
     questions: function() {
+        var answer1 = "";
+        var answer2 = "";
+        var answer3 = "";
     // if quest is over 6, we have asked all the questions and the else statment ends the game
         if (quest < 7) {
-            console.log(quest)
+            countDown = 10;
             interval = setInterval(triviaGame.questionTimer, 1000)
             $("#question-div").html("<h3>" + triviaGame.questArr[quest] + "?</h3>")
             $("#answer-1").html("<h4>1.) " + triviaGame.optionArr[quest][0] + "</h4>")
             $("#answer-2").html("<h4>2.) " + triviaGame.optionArr[quest][1] + "</h4>")
-            $("#answer-3").html("<h4>2.) " + triviaGame.optionArr[quest][2] + "</h4>")
-
+            $("#answer-3").html("<h4>3.) " + triviaGame.optionArr[quest][2] + "</h4>")
+        } else triviaGame.endGame();
+    
     // set what answer the user clicked to variable answer1, then check if that answer matches
     // the last index of the corresponding sub array in optionArr holding the answer choices
-    // answer status is then set to 1 or 2 if the answer is right or wrong.  Then run the checkAnswer function
-            $("#answer-1").on("click", function() {
-            var answer1 = $(this).text();
-                if (answer1 === "1.) " + triviaGame.optionArr[quest][3]) {
-                    answerStatus = 1;
-                } else { answerStatus = 2; }
-                triviaGame.checkAnswer();
-            });
-            $("#answer-2").on("click", function() {
-                var answer1 = $(this).text();
-                if (answer1 === "2.) " + triviaGame.optionArr[quest][3]) {
-                    answerStatus = 1;
-                } else { answerStatus = 2; }
-                triviaGame.checkAnswer();
-            });
-            $("#answer-3").on("click", function() {
-                var answer1 = $(this).text();
-                if (answer1 === "3.) " + triviaGame.optionArr[quest][3]) {
-                    answerStatus = 1;
-                } else { answerStatus = 2; }
-                triviaGame.checkAnswer();
-            });
-        } else triviaGame.endGame();
+    // on clicking each option, code executes to check if it is right or wrong
+            
+        $("#answer-1").on("click", function() {
+                answer1 = $(this).text();
+                    if (answer1 === "1.) " + triviaGame.optionArr[quest][3]) {
+                        answerStatus = true;
+                        $("#yes-no").html("<h3>CORRECT!</h3>")
+                        totalAnswersCorrect++;
+                    } else { 
+                        $("#yes-no").html("<h3> WRONG! The correct answer was " + triviaGame.optionArr[quest][3] + "</h3>")
+                        totalAnswersWrong++;
+                        answerStatus = true;
+                        answer1 = "";
+                    }
+                });
+                $("#answer-2").on("click", function() {
+                    answer2 = $(this).text();
+                    if (answer2 === "2.) " + triviaGame.optionArr[quest][3]) {
+                        answerStatus = true;
+                        $("#yes-no").html("<h3>CORRECT!</h3>")
+                        totalAnswersCorrect++;
+                    } else { 
+                        $("#yes-no").html("<h3> WRONG! The correct answer was " + triviaGame.optionArr[quest][3] + "</h3>")
+                        totalAnswersWrong++;
+                        answerStatus = true;
+                    }
+                });
+                $("#answer-3").on("click", function() {
+                    answer3 = $(this).text();
+                    if (answer3 === "3.) " + triviaGame.optionArr[quest][3]) {
+                        answerStatus = true;
+                        $("#yes-no").html("<h3>CORRECT!</h3>")
+                        totalAnswersCorrect++;
+                    } else { 
+                        $("#yes-no").html("<h3> WRONG! The correct answer was " + triviaGame.optionArr[quest][3] + "</h3>")
+                        totalAnswersWrong++;
+                        answerStatus = true;
+                    }
+                });
+
     },
 //timer to set our countdown, also handles event if user runs out of time and doesnt
-// make a selection
+// checks if question has been answered and calls reset function
     questionTimer: function() {
         $("#countdown-div").html("<h4>Time Remaining: " + countDown +" seconds!")
         countDown--;
@@ -87,38 +108,31 @@ var triviaGame = {
             alert("TIME IS UP!  The correct answer was " + triviaGame.optionArr[quest][3])
             totalAnswersWrong++;
             triviaGame.resets();
-        };
-    },
-//checks the status of answerStatus which holds a 1 or 2 for right or wrong answer
-    checkAnswer: function() {
-        if (answerStatus === 1) {
-            alert("CORRECT!")
+        } else if (answerStatus === true) {
             clearInterval(interval)
-            answerStatus = 0;
-            totalAnswersCorrect++;
-            triviaGame.resets();
-            console.log("correct")
-        } else if (answerStatus === 2) {
-            clearInterval(interval)
-            alert("Wrong!  The correct answer is " + triviaGame.optionArr[quest][3])
-            answerStatus = 0;
-            totalAnswersWrong++;
-            triviaGame.resets();
-            console.log("incorrect")
-        }; 
+            setTimeout(triviaGame.resets(), 2000)
+        }
     },
 //resets our variables or increases them.  Calls quesions function to start new question
     resets: function() {
-        countDown = 10;
+        $("#yes-no").empty();
+        $("#answer1").empty();
+        $("#answer2").empty();
+        $("#answer3").empty();
+        $("#question-div").empty();
         quest++;
-        answerStatus = 0;
+        answerStatus = false;
         triviaGame.questions();
     },
 //called when game is over and all questions have been answered
     endGame: function() {
-        alert("Game Over!")
-        console.log(totalAnswersCorrect + " correct answers")
-        console.log(totalAnswersWrong + " wrong answers")
+        $("#question-div").html("<h3>GAME OVER</h3>")
+        $("#answer-1").html("<h3>You got " + totalAnswersCorrect + " answers right</h3>")
+        $("#answer-2").html("<h3>You got " + totalAnswersWrong + " answers right</h3>")
+        $("#answer-3").html("<button id='play-again-button'>PLAY AGAIN?</button>")
+        $("#play-again-button").on("click", function() {
+            location.reload()
+        })
     }
 
 }
